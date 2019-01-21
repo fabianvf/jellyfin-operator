@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: jellyfin-operator
+  template:
+    metadata:
+      labels:
+        name: jellyfin-operator
+    spec:
+      serviceAccountName: jellyfin-operator
+      containers:
+        - name: jellyfin-operator
+          # Replace this with the built image name
+          image: "{{ REPLACE_IMAGE }}"
+          ports:
+          - containerPort: 60000
+            name: metrics
+          imagePullPolicy: "{{ pull_policy|default('Always') }}"
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "jellyfin-operator"

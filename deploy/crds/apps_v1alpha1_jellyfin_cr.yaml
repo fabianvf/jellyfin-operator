@@ -1,0 +1,7 @@
+apiVersion: apps.fabianism.us/v1alpha1
+kind: Jellyfin
+metadata:
+  name: example-jellyfin
+spec:
+  # Add fields here
+  size: 3

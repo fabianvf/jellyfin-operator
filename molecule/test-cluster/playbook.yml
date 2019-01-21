@@ -1,0 +1,22 @@
+---
+
+- name: Converge
+  hosts: localhost
+  connection: local
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+    deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
+    image_name: apps.fabianism.us/jellyfin-operator:testing
+  tasks:
+  - name: Create the apps.fabianism.us/v1alpha1.Jellyfin
+    k8s:
+      namespace: '{{ namespace }}'
+      definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/apps_v1alpha1_jellyfin_cr.yaml'])) }}"
+
+  - name: Get the newly created Custom Resource
+    debug:
+      msg: "{{ lookup('k8s', group='apps.fabianism.us', api_version='v1alpha1', kind='Jellyfin', namespace=namespace, resource_name=cr.metadata.name) }}"
+    vars:
+      cr: "{{ lookup('file', '/'.join([deploy_dir, 'crds/apps_v1alpha1_jellyfin_cr.yaml'])) | from_yaml }}"
+
+- import_playbook: "{{ playbook_dir }}/../default/asserts.yml"
