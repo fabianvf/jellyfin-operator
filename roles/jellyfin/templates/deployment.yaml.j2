@@ -37,4 +37,4 @@ spec:
           protocol: TCP
         volumeMounts: {{ volume_mounts | to_json }}
       restartPolicy: Always
-      volumes: {{ volumes | to_json }}
+      volumes: {{ volume_specs | to_json }}

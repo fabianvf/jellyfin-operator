@@ -41,9 +41,9 @@ options:
         - inline, not an actual parameter
       type:
         type: str
-        description: 
+        description:
         - Specifies what type of volume this is
-        choices: 
+        choices:
         - PersistentVolumeClaim
         - EmptyDir
       mount_path:
@@ -130,14 +130,14 @@ volume_mounts:
 TODO = None
 
 class Volume(object):
-  
+
     def __init__(self, name, spec, namespace, prefix=None):
         self.name = name
         self.prefix = prefix
         self.volume_name = '-'.join(filter(None, [self.prefix, self.name]))
         self.process_spec(spec)
         self.namespace = namespace
-    
+
     def process_spec(self, spec):
         self.volume_type = spec['type']
         self.read_only = spec.get('read_only', False)
@@ -169,7 +169,7 @@ class Volume(object):
                     "storageClassName": self.storage_class_name,
                 }
             }
-    
+
     def to_volume(self):
         if self.volume_type == 'PersistentVolumeClaim':
             return {
@@ -190,6 +190,7 @@ class Volume(object):
                 "readOnly": self.read_only
             }
 
+
 def operator_storage(volumes, namespace, prefix=None):
     volumes = {name: Volume(name, spec, namespace) for name, spec in volumes.items()}
     ret = {"processed_volumes": {}}
@@ -203,6 +204,7 @@ def operator_storage(volumes, namespace, prefix=None):
     ret['volumes'] = list(filter(None, [volume.to_volume() for volume in volumes.values()]))
     ret['volume_mounts'] = list(filter(None, [volume.to_volume_mount() for volume in volumes.values()]))
     return ret
+
 
 class FilterModule(object):
     def filters(self):
