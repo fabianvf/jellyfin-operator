@@ -1,8 +1,8 @@
 ---
 
 meta:
-  name: test
-  namespace: test
+  name: example-jellyfin
+  namespace: osdk-test
 volumes:
   config:
     type: EmptyDir
@@ -12,3 +12,5 @@ volumes:
     type: EmptyDir
     read_only: yes
     mount_path: /data/media
+
+node_port: 30001

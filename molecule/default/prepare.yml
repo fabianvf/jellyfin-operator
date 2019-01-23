@@ -33,3 +33,14 @@
       until: (result.status|default(-1)) == 200
       retries: 60
       delay: 5
+    
+- name: Prepare
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Ensure the namespace exists
+      k8s:
+        kind: Namespace
+        api_version: v1
+        name: '{{ namespace }}'

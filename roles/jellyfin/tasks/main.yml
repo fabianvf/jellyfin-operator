@@ -2,29 +2,32 @@
 
 - set_fact:
     processed_volumes: '{{ volumes | operator_storage(meta.namespace) }}'
+    has_route: "{{ ('route.openshift.io' in lookup('k8s', cluster_info='api_groups')) | bool }}"
 
 - name: Create required resources for storage
   k8s:
+    namespace: '{{ meta.namespace }}'
     definition: '{{ item  }}'
   with_items: '{{ processed_volumes.definitions }}'
 
 - name: Create Kubernetes deployment
   k8s:
     state: present
+    namespace: '{{ meta.namespace }}'
     definition: "{{ lookup('template', 'deployment.yaml.j2') | from_yaml }}"
   vars:
     volumes: '{{ processed_volumes.volumes }}'
     volume_mounts: '{{ processed_volumes.volume_mounts }}'
 
-- name: Create Kubernetes resources for Jellyfin
+- name: Create Kubernetes service
   k8s:
     state: present
-    definition: '{{ lookup("file", item) | from_yaml }}'
-  with_items:
-  - service.yaml
+    namespace: '{{ meta.namespace }}'
+    definition: "{{ lookup('template', 'service.yaml.j2') | from_yaml }}"
 
 - name: Create OpenShift route
   k8s:
     state: present
+    namespace: '{{ meta.namespace }}'
     definition: '{{ lookup("template", "route.yaml.j2") | from_yaml }}'
-  when: "'route.openshift.io' in lookup('k8s', cluster_info='api_groups')"
+  when: has_route

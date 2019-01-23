@@ -12,6 +12,7 @@ spec:
     port: 8096
     protocol: TCP
     targetPort: 8096
+    nodePort: {{ node_port|int if not has_route else None }}
   selector:
     app: jellyfin
-  type: ClusterIP
+  type: "{{ 'ClusterIP' if has_route else 'NodePort' }}"
