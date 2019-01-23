@@ -2,6 +2,6 @@ sudo: required
 services: docker
 language: python
 install:
-  - pip install docker git+https://github.com/ansible/molecule.git openshift
+  - pip install docker git+https://github.com/ansible/molecule.git openshift jmespath
 script:
   - molecule test -s test-local
