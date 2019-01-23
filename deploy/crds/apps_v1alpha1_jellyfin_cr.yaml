@@ -3,5 +3,9 @@ kind: Jellyfin
 metadata:
   name: example-jellyfin
 spec:
-  # Add fields here
-  size: 3
+  image: docker.io/jellyfin/jellyfin:latest
+  volumes:
+    config:
+      type: EmptyDir
+    media:
+      type: EmptyDir

@@ -1,2 +1,14 @@
 ---
-# defaults file for jellyfin
+
+meta:
+  name: test
+  namespace: test
+volumes:
+  config:
+    type: EmptyDir
+    read_only: no
+    mount_path: /config
+  media:
+    type: EmptyDir
+    read_only: yes
+    mount_path: /data/media
