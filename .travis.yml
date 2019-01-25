@@ -4,4 +4,5 @@ language: python
 install:
   - pip install docker git+https://github.com/ansible/molecule.git openshift jmespath
 script:
+  - molecule test
   - molecule test -s test-local
