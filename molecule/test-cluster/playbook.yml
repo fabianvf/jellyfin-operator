@@ -19,4 +19,4 @@
     vars:
       cr: "{{ lookup('file', '/'.join([deploy_dir, 'crds/apps_v1alpha1_jellyfin_cr.yaml'])) | from_yaml }}"
 
-- import_playbook: "{{ playbook_dir }}/../default/asserts.yml"
+- import_playbook: "{{ playbook_dir }}/../test-local/asserts.yml"

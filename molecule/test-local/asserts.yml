@@ -1,0 +1,38 @@
+---
+
+- name: Verify
+  hosts: localhost
+  connection: local
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  tasks:
+  - name: Assert that a URL has been set on the custom resource
+    assert:
+      that: custom_resource.0.status.url is defined
+    vars:
+      custom_resource: "{{ q('k8s',
+        api_version='apps.fabianism.us/v1alpha1',
+        kind='Jellyfin',
+        resource_name='example-jellyfin',
+        namespace=namespace
+      )}}"
+
+  - name: Store URL
+    set_fact:
+      url: "{{ q('k8s',
+        api_version='apps.fabianism.us/v1alpha1',
+        kind='Jellyfin',
+        resource_name='example-jellyfin',
+        namespace=namespace
+      ).0.status.url}}"
+
+
+  - name: Assert that the URL is valid
+    assert:
+      that:
+      - (url | urlsplit(item) | default(False, boolean=True)) != False
+    with_items:
+    - hostname
+    - scheme
+
+- import_playbook: '{{ playbook_dir }}/../default/asserts.yml'

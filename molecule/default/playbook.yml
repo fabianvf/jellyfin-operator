@@ -1,10 +1,27 @@
 ---
+
 - name: Converge
   hosts: localhost
   connection: local
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
-  roles:
-    - jellyfin
+    meta:
+      name: example-jellyfin
+      namespace: '{{ namespace }}'
+    node_port: 30001
+  tasks:
+  - include_role:
+      name: jellyfin
 
 - import_playbook: '{{ playbook_dir }}/asserts.yml'
+  vars:
+    url: "http://{{ q('k8s',
+      api_version='v1',
+      kind='Pod',
+      namespace=meta.namespace,
+      label_selector='app=jellyfin'
+    ).0.status.hostIP }}:{{ node_port }}"
+    meta:
+      name: example-jellyfin
+      namespace: '{{ namespace }}'
+    node_port: 30001

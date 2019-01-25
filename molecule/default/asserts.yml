@@ -6,12 +6,8 @@
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
   tasks:
-    - name: Get all pods in {{ namespace }}
-      k8s_facts:
-        api_version: v1
-        kind: Pod
-        namespace: '{{ namespace }}'
-      register: pods
-
-    - name: Output pods
-      debug: var=pods
+  - name: Assert that the url is reachable
+    uri:
+      url: '{{ url }}'
+      status_code:
+      - 200

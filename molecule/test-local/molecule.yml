@@ -17,7 +17,6 @@ platforms:
     - 10080/tcp
   published_ports:
     - 0.0.0.0:${TEST_CLUSTER_PORT:-10443}:8443/tcp
-    - 0.0.0.0:30002:30001/tcp
   pre_build_image: yes
   volumes:
     - ${MOLECULE_PROJECT_DIRECTORY}:/build:Z
