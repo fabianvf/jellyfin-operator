@@ -13,6 +13,19 @@
   - include_role:
       name: jellyfin
 
+  - name: Wait for Deployment to finish
+    debug: var=deploy.status
+    until: deploy and deploy.status and deploy.status.replicas == deploy.status.get("availableReplicas", 0)
+    retries: 12
+    delay: 10
+    vars:
+      deploy: '{{ lookup("k8s",
+        kind="Deployment",
+        api_version="apps/v1",
+        namespace=namespace,
+        resource_name="jellyfin"
+      )}}'
+
 - import_playbook: '{{ playbook_dir }}/asserts.yml'
   vars:
     url: "http://{{ q('k8s',
