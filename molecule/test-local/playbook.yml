@@ -24,7 +24,6 @@
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
     pull_policy: Never
     REPLACE_IMAGE: apps.fabianism.us/jellyfin-operator:testing
-    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/apps_v1alpha1_jellyfin_cr.yaml'])) | from_yaml }}"
   tasks:
   - name: Delete the Operator Deployment
     k8s:

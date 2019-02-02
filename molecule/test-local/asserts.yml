@@ -5,20 +5,21 @@
   connection: local
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
+    custom_resource_def: "{{ lookup('file', '/'.join([deploy_dir, 'crds/apps_v1alpha1_jellyfin_cr.yaml'])) | from_yaml }}"
   tasks:
   - block:
     - name: Create the apps.fabianism.us/v1alpha1.Jellyfin
       k8s:
         state: present
         namespace: '{{ namespace }}'
-        definition: "{{ custom_resource }}"
+        definition: "{{ custom_resource_def }}"
 
     - name: Wait 30s for reconcilation to run
       k8s_facts:
-        api_version: '{{ custom_resource.apiVersion }}'
-        kind: '{{ custom_resource.kind }}'
+        api_version: '{{ custom_resource_def.apiVersion }}'
+        kind: '{{ custom_resource_def.kind }}'
         namespace: '{{ namespace }}'
-        name: '{{ custom_resource.metadata.name }}'
+        name: '{{ custom_resource_def.metadata.name }}'
       register: cr
       until:
       - "'Successful' in (cr | json_query('resources[].status.conditions[].reason'))"
