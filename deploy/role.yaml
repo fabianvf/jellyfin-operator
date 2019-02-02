@@ -39,6 +39,12 @@ rules:
   - get
   - create
 - apiGroups:
+  - route.openshift.io
+  resources:
+  - routes
+  verbs:
+  - '*'
+- apiGroups:
   - apps.fabianism.us
   resources:
   - '*'
