@@ -7,6 +7,24 @@
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
   tasks:
   - block:
+    - name: Create the apps.fabianism.us/v1alpha1.Jellyfin
+      k8s:
+        state: present
+        namespace: '{{ namespace }}'
+        definition: "{{ custom_resource }}"
+
+    - name: Wait 30s for reconcilation to run
+      k8s_facts:
+        api_version: '{{ custom_resource.apiVersion }}'
+        kind: '{{ custom_resource.kind }}'
+        namespace: '{{ namespace }}'
+        name: '{{ custom_resource.metadata.name }}'
+      register: cr
+      until:
+      - "'Successful' in (cr | json_query('resources[].status.conditions[].reason'))"
+      delay: 3
+      retries: 10
+
     - name: Assert that a URL has been set on the custom resource
       assert:
         that: custom_resource.0.status.url is defined
@@ -34,6 +52,7 @@
       with_items:
       - hostname
       - scheme
+
     rescue:
     - name: Output CR
       debug: var=custom_resource

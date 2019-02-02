@@ -53,22 +53,4 @@
       namespace: '{{ namespace }}'
       definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) }}"
 
-  - name: Create the apps.fabianism.us/v1alpha1.Jellyfin
-    k8s:
-      state: present
-      namespace: '{{ namespace }}'
-      definition: "{{ custom_resource }}"
-
-  - name: Wait 30s for reconcilation to run
-    k8s_facts:
-      api_version: '{{ custom_resource.apiVersion }}'
-      kind: '{{ custom_resource.kind }}'
-      namespace: '{{ namespace }}'
-      name: '{{ custom_resource.metadata.name }}'
-    register: cr
-    until:
-    - "'Successful' in (cr | json_query('resources[].status.conditions[].reason'))"
-    delay: 3
-    retries: 10
-
 - import_playbook: 'asserts.yml'
