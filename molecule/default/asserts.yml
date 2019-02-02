@@ -14,5 +14,5 @@
     retries: 24
     delay: 5
     register: result
-    until: not (result | failed)
+    until: not (result is failed)
 
