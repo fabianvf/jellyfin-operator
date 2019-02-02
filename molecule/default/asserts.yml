@@ -6,8 +6,13 @@
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
   tasks:
-  - name: Assert that the url is reachable
+  - name: Wait two minutes to confirm URL is reachable
     uri:
       url: '{{ url }}'
       status_code:
       - 200
+    retries: 24
+    delay: 5
+    register: result
+    until: not (result | failed)
+

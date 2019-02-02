@@ -12,7 +12,7 @@ jobs:
     script: molecule test -s test-local
   - name: Test cluster (OpenShift)
     env:
-      - DEST_IMAGE=docker.io/fabianvf/jellyfin-operator:test
+    - DEST_IMAGE=docker.io/fabianvf/jellyfin-operator:test
     before_script:
     - sudo service docker stop
     - sudo sed -i 's/DOCKER_OPTS=\"/DOCKER_OPTS=\"--insecure-registry 172.30.0.0\/16 /' /etc/default/docker
@@ -21,7 +21,8 @@ jobs:
     - tar xvzOf oc.tar.gz openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit/oc > oc && chmod +x oc && sudo mv oc /usr/local/bin/
     - oc cluster up --base-dir=$HOME/oscluster
     - oc login -u system:admin
-    - curl -Lo /usr/local/bin/operator-sdk https://github.com/operator-framework/operator-sdk/releases/download/v0.4.0/operator-sdk-v0.4.0-x86_64-linux-gnu && chmod +x /usr/local/bin/operator-sdk
+    - curl -Lo operator-sdk https://github.com/operator-framework/operator-sdk/releases/download/v0.4.0/operator-sdk-v0.4.0-x86_64-linux-gnu
+    - chmod +x operator-sdk && sudo mv operator-sdk /usr/local/bin
     - sed -i "s|{{ REPLACE_IMAGE }}|$DEST_IMAGE|g" deploy/operator.yaml
     - sed -i 's|{{ pull_policy.default..Always.. }}|Never|g' deploy/operator.yaml
     - operator-sdk build --enable-tests "$DEST_IMAGE"
