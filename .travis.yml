@@ -13,6 +13,7 @@ jobs:
   - name: Test cluster (OpenShift)
     env:
     - DEST_IMAGE=docker.io/fabianvf/jellyfin-operator:test
+    - TEST_NAMESPACE=osdk-test
     before_script:
     - sudo service docker stop
     - sudo sed -i 's/DOCKER_OPTS=\"/DOCKER_OPTS=\"--insecure-registry 172.30.0.0\/16 /' /etc/default/docker
@@ -26,6 +27,7 @@ jobs:
     - sed -i "s|{{ REPLACE_IMAGE }}|$DEST_IMAGE|g" deploy/operator.yaml
     - sed -i 's|{{ pull_policy.default..Always.. }}|Never|g' deploy/operator.yaml
     - operator-sdk build --enable-tests "$DEST_IMAGE"
+    - oc new-project ${TEST_NAMESPACE}
     - oc create -f "deploy/service_account.yaml"
     - oc create -f "deploy/role.yaml"
     - oc create -f "deploy/role_binding.yaml"
