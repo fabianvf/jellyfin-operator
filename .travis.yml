@@ -32,4 +32,4 @@ jobs:
     - oc create -f "deploy/role.yaml"
     - oc create -f "deploy/role_binding.yaml"
     - oc create -f "deploy/crds/apps_v1alpha1_jellyfin_crd.yaml"
-    script: operator-sdk test cluster
+    script: operator-sdk test cluster ${DEST_IMAGE}
