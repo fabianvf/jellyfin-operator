@@ -6,33 +6,56 @@
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
   tasks:
-  - name: Assert that a URL has been set on the custom resource
-    assert:
-      that: custom_resource.0.status.url is defined
-    vars:
-      custom_resource: "{{ q('k8s',
-        api_version='apps.fabianism.us/v1alpha1',
-        kind='Jellyfin',
-        resource_name='example-jellyfin',
-        namespace=namespace
-      )}}"
+  - block:
+    - name: Assert that a URL has been set on the custom resource
+      assert:
+        that: custom_resource.0.status.url is defined
+      vars:
+        custom_resource: "{{ q('k8s',
+          api_version='apps.fabianism.us/v1alpha1',
+          kind='Jellyfin',
+          resource_name='example-jellyfin',
+          namespace=namespace
+        )}}"
 
-  - name: Store URL
-    set_fact:
-      url: "{{ q('k8s',
-        api_version='apps.fabianism.us/v1alpha1',
-        kind='Jellyfin',
-        resource_name='example-jellyfin',
-        namespace=namespace
-      ).0.status.url}}"
+    - name: Store URL
+      set_fact:
+        url: "{{ q('k8s',
+          api_version='apps.fabianism.us/v1alpha1',
+          kind='Jellyfin',
+          resource_name='example-jellyfin',
+          namespace=namespace
+        ).0.status.url}}"
 
+    - name: Assert that the URL is valid
+      assert:
+        that:
+        - (url | urlsplit(item) | default(False, boolean=True)) != False
+      with_items:
+      - hostname
+      - scheme
+    rescue:
+    - name: Output CR
+      debug: var=custom_resource
+      vars:
+        custom_resource: "{{ q('k8s',
+          api_version='apps.fabianism.us/v1alpha1',
+          kind='Jellyfin',
+          resource_name='example-jellyfin',
+          namespace=namespace
+        )}}"
 
-  - name: Assert that the URL is valid
-    assert:
-      that:
-      - (url | urlsplit(item) | default(False, boolean=True)) != False
-    with_items:
-    - hostname
-    - scheme
+    - name: get operator logs
+      ignore_errors: yes
+      failed_when: false
+      command: kubectl logs deployment/{{ definition.metadata.name }} -n {{ namespace }}
+      vars:
+        definition: "{{ lookup('file', '/'.join([deploy_dir, 'operator.yaml'])) | from_yaml }}"
+      register: log
+
+    - debug: var=log.stdout_lines
+
+    - fail:
+        msg: "Failed in asserts.yml"
 
 - import_playbook: '{{ playbook_dir }}/../default/asserts.yml'
