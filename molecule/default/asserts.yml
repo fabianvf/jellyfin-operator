@@ -6,6 +6,9 @@
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
   tasks:
+  - name: Output url
+    debug: var={{ url }}
+
   - name: Wait two minutes to confirm URL is reachable
     uri:
       url: '{{ url }}'
@@ -15,4 +18,3 @@
     delay: 5
     register: result
     until: not (result is failed)
-
