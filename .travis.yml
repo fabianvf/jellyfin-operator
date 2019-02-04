@@ -14,6 +14,7 @@ jobs:
     env:
     - DEST_IMAGE=docker.io/fabianvf/jellyfin-operator:test
     - TEST_NAMESPACE=osdk-test
+    - sudo sed -i -E 's/(^127.0.0.1.*)/\1 jellyfin-osdk-test.127.0.0.1.nip.io' /etc/hosts
     before_script:
     - sudo service docker stop
     - sudo sed -i 's/DOCKER_OPTS=\"/DOCKER_OPTS=\"--insecure-registry 172.30.0.0\/16 /' /etc/default/docker
