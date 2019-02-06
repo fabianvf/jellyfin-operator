@@ -19,3 +19,4 @@
     delay: 5
     register: result
     until: not (result is failed)
+    when: molecule_yml.scenarion.name != 'test-cluster'
