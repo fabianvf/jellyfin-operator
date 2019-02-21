@@ -16,11 +16,11 @@ spec:
       containers:
         - name: jellyfin-operator
           # Replace this with the built image name
-          image: docker.io/homecluster/jellyfin-operator:latest
+          image: "{{ REPLACE_IMAGE }}"
           ports:
           - containerPort: 60000
             name: metrics
-          imagePullPolicy: Always
+          imagePullPolicy: "{{ pull_policy|default('Always') }}"
           env:
             - name: WATCH_NAMESPACE
               valueFrom:

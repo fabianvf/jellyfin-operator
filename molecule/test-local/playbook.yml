@@ -29,7 +29,7 @@
     k8s:
       state: absent
       namespace: '{{ namespace }}'
-      definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) }}"
+      definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml.j2'])) }}"
     register: delete_deployment
     when: hostvars[groups.k8s.0].build_cmd.changed
 
@@ -40,7 +40,7 @@
       namespace: '{{ namespace }}'
       name: '{{ definition.metadata.name }}'
     vars:
-      definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) | from_yaml }}"
+      definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml.j2'])) | from_yaml }}"
     register: deployment
     until: not deployment.resources
     delay: 3
@@ -50,6 +50,6 @@
   - name: Create the Operator Deployment
     k8s:
       namespace: '{{ namespace }}'
-      definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) }}"
+      definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml.j2'])) }}"
 
 - import_playbook: 'asserts.yml'
