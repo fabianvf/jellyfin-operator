@@ -8,7 +8,6 @@ spec:
     config:
       type: EmptyDir
       readOnly: no
-      mountPath: /config
     media:
       type: EmptyDir
       readOnly: yes

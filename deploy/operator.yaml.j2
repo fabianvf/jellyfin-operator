@@ -15,12 +15,11 @@ spec:
       serviceAccountName: jellyfin-operator
       containers:
         - name: jellyfin-operator
-          # Replace this with the built image name
-          image: "{{ REPLACE_IMAGE }}"
+          image: "{{ image }}"
           ports:
           - containerPort: 60000
             name: metrics
-          imagePullPolicy: "{{ pull_policy|default('Always') }}"
+          imagePullPolicy: "{{ pull_policy|default('IfNotPresent') }}"
           env:
             - name: WATCH_NAMESPACE
               valueFrom:

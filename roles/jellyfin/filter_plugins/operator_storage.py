@@ -51,7 +51,7 @@ options:
         required: False
         description:
         - The path in a container the specified volume should be mounted
-        - Required for the I(volume_mounts) to be returned
+        - defaults to /<volume name>
       claim_name:
         type: str
         default: I(prefix)-I(name)
@@ -129,6 +129,7 @@ volume_mounts:
 
 TODO = None
 
+
 class Volume(object):
 
     def __init__(self, name, spec, namespace, prefix=None):
@@ -141,7 +142,7 @@ class Volume(object):
     def process_spec(self, spec):
         self.volume_type = spec['type']
         self.read_only = spec.get('read_only', False)
-        self.mount_path = spec.get('mount_path')
+        self.mount_path = spec.get('mount_path', self.name)
         if self.volume_type == 'PersistentVolumeClaim':
             self.access_modes = spec.get('access_modes', ['ReadWriteOnce'])
             for mode in self.access_modes:
